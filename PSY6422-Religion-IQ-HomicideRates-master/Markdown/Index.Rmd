@@ -64,6 +64,7 @@ pvalue1= cor_test1$p.value
 
 ```
 Figure 1 
+
 *(An attempt to edit the default plot points' shape and colour was made, however, this only overlaid the new coloured points over the original sacatter-plot points. To see an example of the proble code and output generated please see "issuse code" in the [GIT REPO](https://github.com/henrycusack/PSY6422-Religion-IQ-HomicideRates), fixing this issues was beyond the timeframe of this project and the coding ability of the author, however, may be of interest to advanced R users.)*
 
 This graph seems to support the findings in the original paper suggesting that religiosity does in fact reduce homicide rates, however only for populations with a relatively low IQ scores (>81).
@@ -87,6 +88,7 @@ pvalue2= cor_test2$p.value
 
 ```
 Figure 2
+
 *(An attempt to edit the default plot points' shape and colour was made, however, this only overlaid the new coloured points over the original sacatter-plot points. To see an example of the proble code and output generated please see "issuse code" in the [GIT REPO](https://github.com/henrycusack/PSY6422-Religion-IQ-HomicideRates), fixing this issues was beyond the timeframe of this project and the coding ability of the author, however, may be of interest to advanced R users.)*
 
 This graph shows a convincing argument that homicide rates are negatively associated with mean IQ scores. Note the only group to not match this trend was the lowest religiosity group ("(0.227,0.421]"), however, this group only contained data from two countries and therefore cannot be counted as scientifically significant observation.
@@ -109,3 +111,11 @@ Other recommendations for researchers who wish to take this project further woul
 Other possible extensions on this project could be to look at other crime data. The original paper wished to look at violent crime in general, however, was forced to limit their research to homicide rates due to the variability in how violent crime is reported across cultures. For example, genital mutilation is almost exclusively limited to religious cultures, however, this is almost never reported. Researchers who wish to do this must ensure the reliability of the data they use. Other possible violent crime data to investigate could include rate of terrorist attacks, armed robbery and muggings, child abuse, rape and domestic violence. 
 
 Repo for this analysis (the markdown file which generated this page, data and plot files) is avalible here: [https://github.com/henrycusack/PSY6422-Religion-IQ-HomicideRates]
+
+``Windows 10 Home`` -- version 1903
+
+``R version 4.0.0`` (2020-04-24) -- "Arbor Day"
+
+Packages: ``haven`` -- Import and Export 'SPSS', 'Stata' and 'SAS' Files
+
+``car`` -- Companion to Applied Regression
