@@ -9,13 +9,13 @@ output_height: 200
 # Investigating the Relationship Between Religiosity, IQ and Homicide Rates
 
 ## Project Aims
-This project was inspired by the research article **"Declines in Religiosity Predict Increases in Violent Crime—but Not Among Countries With Relatively High Average IQ"** *(Clark, Weingard, Beardslee, Baumeister and Shariff, 2020)*. Whilst the findings of this paper were nicely summed up by the title, the authors failed to produce a visual representation of the relationship between religion and homicide rates; or how IQ may mitigate this. This is therefore the main task of this project. This project then goes on to investigate whether IQ may have a stronger relationship with homicide rates than religiosity; and how religiosity may mitigate this relationship. Visual representations, as well as, statistical measures of these relationships are reported, however, the data analysis is very crude using the mean religiosity and mean IQ form three different measure of each. Furthermore, statistical analysis used assumes a linear relationship between these variable which is unlikely. This provides scope for other researchers to take this project further and investigate whether the queries brought up in this project are statistically significant and remain so once controlling for other variables such as population density, GDP or income inequality.
+This project was inspired by the research article **"Declines in Religiosity Predict Increases in Violent Crime—but Not Among Countries With Relatively High Average IQ"** *(Clark, Weingard, Beardslee, Baumeister and Shariff, 2020)*. Whilst the findings of this paper were nicely summed up by the title, the authors failed to produce a visual representation of the relationship between religion and homicide rates or how IQ may mitigate this. This is therefore the main task of this project. This project then goes on to investigate whether IQ may have a stronger relationship with homicide rates than religiosity and how religiosity may mitigate this relationship. Visual representations, as well as, statistical measures of these relationships are reported.
 
 ## Data Origins
 All data and analysis code have been made publicly available via the Open Science Framework and can be accessed through this [link](https://osf.io/ecdrt/) as of 07/05/2020. B. M. Winegard. C. J. Clark and A. F. Shariff compiled the data. Data, code and code book are all available from link above.
 
 ## Data Preparation
-In order to create a single graph representing all the relevant data, first the data had to be loaded and then new mean religiosity and IQ columns were generated. After this two additional columns cutting mean religiosity and mean IQ into 4 discrete groups. This was done so that we could plot religiosity against homicide rates splitting points by IQ scores *(and visa versa)*. The data frame was then reduced to the columns necessary for this project to make it easier for readers to follow. The steps for this can be seen below.
+In order to create a single graph representing all the relevant data, first the data had to be loaded, then new mean religiosity and IQ columns were generated. After this, two additional columns cutting mean religiosity and mean IQ into 4 discrete groups. This was done so that we could plot religiosity against homicide rates splitting points by IQ scores *(and visa versa)*. The data frame was then reduced to the columns necessary for this project to make it easier for readers to follow. The steps for this can be seen below.
 
 ```{r}
 #To read SPSS files
@@ -29,8 +29,10 @@ Study2RawData <- read_sav("Study2RawData.sav")
 KeepCols <- c('Relig_ARDA', 'Relig_Pew', 'Relig_Gallup','NIQ_QNWSAS', 'NIQ_LV12GEO', 'NIQ_R', 'HomRate')
 Study2RawData <-Study2RawData[,KeepCols]
 
-#Creating Mean Religiosity and Mean IQ Score columns
+#Creating Mean Religiosity column
 Study2RawData$mean_Relig <- rowMeans(Study2RawData[c('Relig_ARDA', 'Relig_Pew', 'Relig_Gallup')], na.rm=FALSE) #Note the exclution of N.A. values
+
+#Creating Mean IQ column
 Study2RawData$mean_IQ <- rowMeans(Study2RawData[c('NIQ_QNWSAS', 'NIQ_LV12GEO', 'NIQ_R')], na.rm=FALSE)
 
 #Use cut function to divide mean_IQ into 4 groups
@@ -50,19 +52,23 @@ The first data visualisation reported was a graph showing the relationship betwe
 library(car) 
 
 #Scatterplot, divided by IQ group
-scatterplot(HomRate ~ mean_Relig | IQ_groups, data = Study2RawData, smooth=FALSE, legend = c(title="IQ Groups", coords="topleft"), grid=FALSE, frame=TRUE, xlab = 'Mean Religiosity', ylab = 'Homicide Rate', main = 'Religiosity VS Homicide rate Scatter-plot Divided by IQ Group', col.main="darkgray", cex.axis=0.6,)
-attach(Study2RawData);points(Study2RawData$mean_Relig[Study2RawData$IQ_groups=='(57.1,69.4]'],Study2RawData$HomRate[Study2RawData$IQ_groups=='(57.1,69.4]'],pch=0, col='red')+points(Study2RawData$mean_Relig[Study2RawData$IQ_groups=='(69.4,81.6]'],Study2RawData$HomRate[Study2RawData$IQ_groups=='(69.4,81.6]'],pch=1, col='green4')+points(Study2RawData$mean_Relig[Study2RawData$IQ_groups=='(81.6,93.8]'],Study2RawData$HomRate[Study2RawData$IQ_groups=='(81.6,93.8]'],pch=2, col='blue')+points(Study2RawData$mean_Relig[Study2RawData$IQ_groups=='(93.8,106]'],Study2RawData$HomRate[Study2RawData$IQ_groups=='(93.8,106]'],pch=5, col='darkgoldenrod2');detach(Study2RawData)
+scatterplot(HomRate ~ mean_Relig | IQ_groups, data = Study2RawData, 
+            smooth=FALSE, legend = c(title="IQ Groups", coords="topleft"), grid=FALSE, 
+frame=TRUE, cex.axis=0.6, 
+            xlab = 'Mean Religiosity', ylab = 'Homicide Rate', main = 'Religiosity VS Homicide rate Scatter-plot Divided by IQ Group', col.main="darkgray", )
 
+# Test of Pearson correlation coefficient
 cor_test1 <- cor.test(Study2RawData$mean_Relig, Study2RawData$HomRate)
 estimate1 = cor_test1$estimate  
 pvalue1= cor_test1$p.value
 
 ```
-Figure 1
+Figure 1 
+*(An attempt to edit the default plot points' shape and colour was made, however, this only overlaid the new coloured points over the original sacatter-plot points. To see an example of the proble code and output generated please see "issuse code" in the [GIT REPO](https://github.com/henrycusack/PSY6422-Religion-IQ-HomicideRates), fixing this issues was beyond the timeframe of this project and the coding ability of the author, however, may be of interest to advanced R users.)*
 
-This graph seems to support the findings in the original paper suggesting that religiosity does in fact reduce homicide rates, however only for populations with a relatively low IQ scores.
+This graph seems to support the findings in the original paper suggesting that religiosity does in fact reduce homicide rates, however only for populations with a relatively low IQ scores (>81).
 
-We have also run a persons test of correlations between mean religiosity scores and homicide rates: estimate=`r estimate1`, p-value=`r pvalue1`
+A persons test of correlations was also run between mean religiosity scores and homicide rates: estimate=`r estimate1`, p-value=`r pvalue1`
 
 ## Data Visualisation 2
 
@@ -70,29 +76,36 @@ The second data visualisation reported was a graph showing the relationship betw
 
 ```{r fig2, fig.height = 9, fig.width = 6.5, fig.align = "center"}
 #Scatterplot, divided by religiosity
-scatterplot(HomRate ~ mean_IQ | Relig_groups, data = Study2RawData, smooth=FALSE, legend = c(title="Religiosity Groups", coords="topleft"),, grid = FALSE, frame = TRUE, xlab = 'Mean IQ', ylab = 'Homicide Rate', main = 'IQ scores VS Homicide rate Scatter-plot Divided by Religiosity', col.main="darkgray", cex.axis=0.6,)
-attach(Study2RawData);points(Study2RawData$mean_IQ[Study2RawData$Relig_groups=='(0.227,0.421]'],Study2RawData$HomRate[Study2RawData$Relig_groups=='(0.227,0.421]'],pch=0, col='red')+points(Study2RawData$mean_IQ[Study2RawData$Relig_groups=='(0.421,0.614]'],Study2RawData$HomRate[Study2RawData$Relig_groups=='(0.421,0.614]'],pch=1, col='green4')+points(Study2RawData$mean_IQ[Study2RawData$Relig_groups=='(0.614,0.807]'],Study2RawData$HomRate[Study2RawData$Relig_groups=='(0.614,0.807]'],pch=2, col='blue')+points(Study2RawData$mean_IQ[Study2RawData$Relig_groups=='(0.807,1]'],Study2RawData$HomRate[Study2RawData$Relig_groups=='(0.807,1]'],pch=5, col='darkgoldenrod2');detach(Study2RawData)
+scatterplot(HomRate ~ mean_IQ | Relig_groups, data = Study2RawData,
+            smooth=FALSE, legend = c(title="Religiosity Groups", coords="topleft"), grid = FALSE, frame = TRUE,cex.axis=0.6,
+            xlab = 'Mean IQ', ylab = 'Homicide Rate', main = 'IQ scores VS Homicide rate Scatter-plot Divided by Religiosity', col.main="darkgray",)
 
+# Test of Pearson correlation coefficient
 cor_test2 <- cor.test(Study2RawData$mean_IQ, Study2RawData$HomRate)
 estimate2 = cor_test2$estimate  
 pvalue2= cor_test2$p.value
 
 ```
 Figure 2
+*(An attempt to edit the default plot points' shape and colour was made, however, this only overlaid the new coloured points over the original sacatter-plot points. To see an example of the proble code and output generated please see "issuse code" in the [GIT REPO](https://github.com/henrycusack/PSY6422-Religion-IQ-HomicideRates), fixing this issues was beyond the timeframe of this project and the coding ability of the author, however, may be of interest to advanced R users.)*
 
 This graph shows a convincing argument that homicide rates are negatively associated with mean IQ scores. Note the only group to not match this trend was the lowest religiosity group ("(0.227,0.421]"), however, this group only contained data from two countries and therefore cannot be counted as scientifically significant observation.
 
-We have also run a persons test of correlations between mean IQ scores and homicide rates: estimate=`r estimate2`, p-value=`r pvalue2`
+A persons test of correlations was also run between between mean IQ scores and homicide rates: estimate=`r estimate2`, p-value=`r pvalue2`
 
 ## Summary
 Figure 1 provides a visual representation supporting the finding from the original paper.
 
-Figure 2 suggests that IQ scores are negatively associated with homicide rates. The correlation statistic produced would support this, however, a linear correlation is assumed when this may not be the case. This stimulates interesting sociological, philosophical and psychological question to be investigated further.One of these questions raised could be, whether IQ holds stronger predictive variance of homicide rates than religiosity. This could be of importance to the original paper as they assume religiosity to be the main predictor with IQ mitigating the relationship, however it could prove that declines in IQ predict increases in homicide rates — but not among countries with relatively high average religiosity being a more accurate claim.
+Figure 2 suggests that IQ scores are negatively associated with homicide rates. The correlation statistic produced would support this, however, the statistical analysis used assumes a linear relationship between these variable - for both religiosity and homicide rates and IQ scores and honicide rates - which is unlikely to be the case. 
+  
+This stimulates interesting sociological, philosophical and psychological question to be investigated further. One of these questions raised could be, whether IQ holds a stronger predictive variance of homicide rates than religiosity. This could be of importance to the original paper as they assume religiosity to be the main predictor with IQ mitigating the relationship, however, it could prove that declines in IQ predict increases in homicide rates is a more accurate claim.
 
-Whilst these graphs highlight some interesting trends, as mentioned above this project uses mean values of three measures of religiosity and three measures of IQ; this makes for crude analysis and representation of the data. If any researchers were to take this project further, individual plots for each variable would be the first recommendation, for example, plotting Relig_ARDA VS HomRate, Relig_Pew VS HomRate and Relig_Gallup VS HomRate with each variation of these plots again using NIQ_QNWSAS, NIQ_LV12GEO and NIQ_R as a third variable, therefore creating nine scatter-plots. 
-Secondly more comprehensive analysis of the relationship between these variable, as well as, tests of significance would be necessary for the project to hold scientific importance.
-Similarly, controlling for variables like income inequality, education levels and democracy scores could be an option for further research, all thing that the original paper covered but this project didn't. However, controlling for these variable is to assume religion has no impact on them. This analysis would be allowed by the raw data set available from the [Center for Open Science](https://osf.io/ecdrt/) website.
-Other recommendations for researchers who wish to take this project further would be to split countries according to religion and see if the trends identified above hold true. Splitting populations according to Christian or Muslim majority is something the data set would allow. 
-Other possible extensions on this project could be to look at other crime data. The original paper wished to look at violent crime, but was forced to limit their research to homicide rates due to the variability in how violent crime is reported across cultures. For example, genital mutilation is almost exclusively limited to religious cultures, however, this is almost never reported. Researchers who wish to do this must ensure the reliability of the data they use. Other possible violent crime data to investigate could include rate of terrorist attacks, armed robbery and muggings, child abuse, rape and domestic violence. 
+Whilst these graphs highlight some interesting trends, this project uses mean values of three measures of religiosity and three measures of IQ; this makes for very crude analysis and representation of the data. If any researchers were to take this project further, individual plots accompanied by statistical analysis for each variable would be the first recommendation, for example, plotting Relig_ARDA VS HomRate, Relig_Pew VS HomRate and Relig_Gallup VS HomRate with each variation of these plots again using NIQ_QNWSAS, NIQ_LV12GEO and NIQ_R as a third variable, therefore creating nine scatter-plots. The same would be done for IQ scores and homicide rates.
 
-Repo for this analysis (the markdown file which generated this page, data and plot files) is here: 'yet to be made'
+Similarly, controlling for variables like Grose Domestic Product (GDP), income inequality, education levels and democracy scores could be an option for further research, all thing that the original paper covered but this project didn't. This analysis would be allowed by the raw data set available from the [Center for Open Science](https://osf.io/ecdrt/) website.
+
+Other recommendations for researchers who wish to take this project further would be to split countries according to demonination of religion and see if the trends identified above hold true. Splitting populations according to Christian or Muslim majority is something the data set would allow. 
+
+Other possible extensions on this project could be to look at other crime data. The original paper wished to look at violent crime in general, however, was forced to limit their research to homicide rates due to the variability in how violent crime is reported across cultures. For example, genital mutilation is almost exclusively limited to religious cultures, however, this is almost never reported. Researchers who wish to do this must ensure the reliability of the data they use. Other possible violent crime data to investigate could include rate of terrorist attacks, armed robbery and muggings, child abuse, rape and domestic violence. 
+
+Repo for this analysis (the markdown file which generated this page, data and plot files) is avalible here: [https://github.com/henrycusack/PSY6422-Religion-IQ-HomicideRates]
